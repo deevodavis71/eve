@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,15 +45,37 @@ public class CommandBus {
 
     }
 
-    public void process(AbstractCommand command, String aggregateId) throws Exception {
+    public String process(AbstractCommand command, String aggregateId) throws Exception {
 
         // Start TX
 
-        // Get the aggregate type (to see if it already exists - no aggregate, no events)
-        //Aggregate agg = aggRepository.findOne(aggregateId);
-
         // Create the empty aggregate
         AbstractAggregate agg = initialiseAggregate(command);
+
+        // Get the aggregate type (to see if it already exists - no aggregate, no events)
+        if (aggregateId == null) {
+
+            // Add an entry into the aggregates table
+
+            aggregateId = UUID.randomUUID().toString();
+
+            Aggregate a = new Aggregate();
+            a.setAggregateId(aggregateId);
+            a.setAggregateType(agg.getClass().getCanonicalName());
+
+            aggRepository.save(a);
+
+        } else {
+
+            // Check that we have an aggregate with this ID
+
+            Aggregate a = aggRepository.findOne(aggregateId);
+            if (a == null)
+                throw new Exception("Aggregate Id not found:" + aggregateId);
+
+        }
+
+
 
         // Set the ID
         agg.setAggregateId(aggregateId);
@@ -86,6 +109,8 @@ public class CommandBus {
         // Persist any new events to the event store
         if (newEvents != null && !newEvents.isEmpty())
             persistNewEvents(agg, newEvents);
+
+        return aggregateId;
 
         // Commit TX
 

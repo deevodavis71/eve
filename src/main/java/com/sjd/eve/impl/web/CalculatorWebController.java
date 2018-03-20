@@ -38,10 +38,10 @@ public class CalculatorWebController {
 
     }
 
-    @PostMapping("/create/{id}/{data}")
-    public String createCalculator(@PathVariable("id") String id, @PathVariable("data") Long data) throws Exception {
+    @PostMapping("/create/{data}")
+    public String createCalculator(@PathVariable("data") Long data) throws Exception {
 
-        this.commandBus.process(new CreateCalculatorCommand(data), id);
+        String id = this.commandBus.process(new CreateCalculatorCommand(data), null);
         return id;
 
     }
