@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sjd.eve.cqrs.core.AbstractAggregate;
-import com.sjd.eve.cqrs.core.AbstractCommand;
-import com.sjd.eve.cqrs.core.AbstractEvent;
+import com.sjd.eve.cqrs.core.AggregateRoot;
+import com.sjd.eve.cqrs.core.Command;
+import com.sjd.eve.cqrs.core.Event;
 import com.sjd.eve.cqrs.domain.Aggregate;
-import com.sjd.eve.cqrs.domain.Event;
+import com.sjd.eve.cqrs.domain.AggregateEvent;
 import com.sjd.eve.cqrs.repository.AggregateRepository;
-import com.sjd.eve.cqrs.repository.EventRepository;
+import com.sjd.eve.cqrs.repository.AggregateEventRepository;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -35,22 +35,22 @@ public class CommandBus {
     private AggregateRepository aggRepository;
 
     @Autowired
-    private EventRepository eveRepository;
+    private AggregateEventRepository eveRepository;
 
-    private Map<Class<? extends AbstractCommand>, Class<? extends AbstractAggregate>> registrations = new HashMap<>();
+    private Map<Class<? extends Command>, Class<? extends AggregateRoot>> registrations = new HashMap<>();
 
-    public void registerCommand(Class<? extends AbstractCommand> command, Class<? extends AbstractAggregate> aggregate) {
+    public void registerCommand(Class<? extends Command> command, Class<? extends AggregateRoot> aggregate) {
 
         registrations.put(command, aggregate);
 
     }
 
-    public String process(AbstractCommand command, String aggregateId) throws Exception {
+    public String process(Command command, String aggregateId) throws Exception {
 
         // Start TX
 
         // Create the empty aggregate
-        AbstractAggregate agg = initialiseAggregate(command);
+        AggregateRoot agg = initialiseAggregate(command);
 
         // Get the aggregate type (to see if it already exists - no aggregate, no events)
         if (aggregateId == null) {
@@ -83,7 +83,7 @@ public class CommandBus {
         // Load any events from the eventstore for this persistence Id
         if (agg != null) {
 
-            List<Event> events = eveRepository.findByAggregateIdOrderByEventId(aggregateId);
+            List<AggregateEvent> events = eveRepository.findByAggregateIdOrderByEventId(aggregateId);
 
             // Apply the events in sequence to rebuild the aggregate to its current state
             if (events != null && !events.isEmpty()) {
@@ -91,9 +91,9 @@ public class CommandBus {
                 ObjectMapper mapper = new ObjectMapper();
 
                 // Get each event type and reconstruct it
-                for(Event event: events) {
+                for(AggregateEvent event: events) {
 
-                    AbstractEvent absEvent = (AbstractEvent) mapper.readValue(event.getEventData(), Class.forName(event.getEventType()));
+                    Event absEvent = (Event) mapper.readValue(event.getEventData(), Class.forName(event.getEventType()));
                     applyEventToAggregate(agg, absEvent);
 
                 }
@@ -104,7 +104,7 @@ public class CommandBus {
 
 
         // Apply this command to the aggregate, getting back a list of events it generated
-        List<AbstractEvent> newEvents = applyCommandToAggregate(agg, command);
+        List<Event> newEvents = applyCommandToAggregate(agg, command);
 
         // Persist any new events to the event store
         if (newEvents != null && !newEvents.isEmpty())
@@ -116,14 +116,14 @@ public class CommandBus {
 
     }
 
-    private void persistNewEvents(AbstractAggregate agg, List<AbstractEvent> newEvents) throws Exception {
+    private void persistNewEvents(AggregateRoot agg, List<Event> newEvents) throws Exception {
 
         // If we have any new events we save these back now
         if (newEvents != null && !newEvents.isEmpty()) {
 
-            for(AbstractEvent ae: newEvents) {
+            for(Event ae: newEvents) {
 
-                Event eve = new Event();
+                AggregateEvent eve = new AggregateEvent();
                 eve.setAggregateId(agg.getAggregateId());
 
                 Calendar cal = Calendar.getInstance();
@@ -145,20 +145,20 @@ public class CommandBus {
 
     }
 
-    private List<AbstractEvent> applyCommandToAggregate(AbstractAggregate agg, AbstractCommand absCommand) throws Exception {
+    private List<Event> applyCommandToAggregate(AggregateRoot agg, Command absCommand) throws Exception {
 
         // Locate the handler method that takes this command
         Method method = ReflectionUtils.findMethod(agg.getClass(), "process", absCommand.getClass());
         if (method != null) {
 
-            return (List<AbstractEvent>) method.invoke(agg, absCommand);
+            return (List<Event>) method.invoke(agg, absCommand);
 
         }
 
         return null;
     }
 
-    private void applyEventToAggregate(AbstractAggregate agg, AbstractEvent absEvent) throws Exception {
+    private void applyEventToAggregate(AggregateRoot agg, Event absEvent) throws Exception {
 
         // Locate the handler method that takes this event
         Method method = ReflectionUtils.findMethod(agg.getClass(), "apply", absEvent.getClass());
@@ -170,10 +170,10 @@ public class CommandBus {
 
     }
 
-    private AbstractAggregate initialiseAggregate(AbstractCommand command) throws Exception {
+    private AggregateRoot initialiseAggregate(Command command) throws Exception {
 
         // Get the aggregate
-        Class<? extends AbstractAggregate> clz = registrations.get(command.getClass());
+        Class<? extends AggregateRoot> clz = registrations.get(command.getClass());
 
         if (clz != null) {
 

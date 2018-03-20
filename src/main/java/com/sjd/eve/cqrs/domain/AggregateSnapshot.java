@@ -6,5 +6,5 @@ package com.sjd.eve.cqrs.domain;
  * Time: 16:48
  * Description:
  */
-public class Snapshot {
+public class AggregateSnapshot {
 }

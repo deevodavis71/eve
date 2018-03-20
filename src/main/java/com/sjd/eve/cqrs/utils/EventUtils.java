@@ -3,7 +3,7 @@ package com.sjd.eve.cqrs.utils;
 import java.util.Arrays;
 import java.util.List;
 
-import com.sjd.eve.cqrs.core.AbstractEvent;
+import com.sjd.eve.cqrs.core.Event;
 
 /**
  * User: stevedavis
@@ -13,7 +13,7 @@ import com.sjd.eve.cqrs.core.AbstractEvent;
  */
 public class EventUtils {
 
-    public static List<AbstractEvent> events(AbstractEvent... events) {
+    public static List<Event> events(Event... events) {
         return Arrays.asList(events);
     }
 

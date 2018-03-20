@@ -16,7 +16,7 @@ import lombok.Data;
  */
 @Document
 @Data
-public class Event {
+public class AggregateEvent {
 
     @Id
     @NotNull

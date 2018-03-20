@@ -1,10 +1,9 @@
 package com.sjd.eve.impl.event;
 
-import com.sjd.eve.cqrs.core.AbstractEvent;
+import com.sjd.eve.cqrs.core.Event;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * User: stevedavis
@@ -15,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class NumberAddedEvent extends AbstractEvent {
+public class NumberAddedEvent extends Event {
 
     private long data;
 

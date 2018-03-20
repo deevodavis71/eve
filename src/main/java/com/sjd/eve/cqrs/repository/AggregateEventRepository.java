@@ -6,8 +6,7 @@ import org.springframework.data.couchbase.core.query.N1qlPrimaryIndexed;
 import org.springframework.data.couchbase.core.query.ViewIndexed;
 import org.springframework.data.couchbase.repository.CouchbasePagingAndSortingRepository;
 
-import com.sjd.eve.cqrs.domain.Aggregate;
-import com.sjd.eve.cqrs.domain.Event;
+import com.sjd.eve.cqrs.domain.AggregateEvent;
 
 /**
  * User: stevedavis
@@ -16,9 +15,9 @@ import com.sjd.eve.cqrs.domain.Event;
  * Description:
  */
 @N1qlPrimaryIndexed
-@ViewIndexed(designDoc = "events")
-public interface EventRepository extends CouchbasePagingAndSortingRepository<Event, String> {
+@ViewIndexed(designDoc = "aggregate_events")
+public interface AggregateEventRepository extends CouchbasePagingAndSortingRepository<AggregateEvent, String> {
 
-    List<Event> findByAggregateIdOrderByEventId(String aggregateId);
+    List<AggregateEvent> findByAggregateIdOrderByEventId(String aggregateId);
 
 }

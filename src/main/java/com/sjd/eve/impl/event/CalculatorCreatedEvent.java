@@ -1,6 +1,6 @@
 package com.sjd.eve.impl.event;
 
-import com.sjd.eve.cqrs.core.AbstractEvent;
+import com.sjd.eve.cqrs.core.Event;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class CalculatorCreatedEvent extends AbstractEvent {
+public class CalculatorCreatedEvent extends Event {
 
     private long initialValue;
 

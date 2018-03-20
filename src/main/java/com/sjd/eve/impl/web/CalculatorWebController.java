@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sjd.eve.cqrs.bus.CommandBus;
-import com.sjd.eve.impl.aggregate.CalculatorAggregate;
+import com.sjd.eve.impl.aggregate.CalculatorAggregateRoot;
 import com.sjd.eve.impl.command.AddNumberCommand;
 import com.sjd.eve.impl.command.CreateCalculatorCommand;
 import com.sjd.eve.impl.command.SubtractNumberCommand;
@@ -32,9 +32,9 @@ public class CalculatorWebController {
 
         this.commandBus = commandBus;
 
-        this.commandBus.registerCommand(CreateCalculatorCommand.class, CalculatorAggregate.class);
-        this.commandBus.registerCommand(AddNumberCommand.class, CalculatorAggregate.class);
-        this.commandBus.registerCommand(SubtractNumberCommand.class, CalculatorAggregate.class);
+        this.commandBus.registerCommand(CreateCalculatorCommand.class, CalculatorAggregateRoot.class);
+        this.commandBus.registerCommand(AddNumberCommand.class, CalculatorAggregateRoot.class);
+        this.commandBus.registerCommand(SubtractNumberCommand.class, CalculatorAggregateRoot.class);
 
     }
 

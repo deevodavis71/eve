@@ -11,7 +11,7 @@ import lombok.Data;
  * Description:
  */
 @Data
-abstract public class AbstractAggregate {
+abstract public class AggregateRoot {
 
     protected String aggregateId;
 

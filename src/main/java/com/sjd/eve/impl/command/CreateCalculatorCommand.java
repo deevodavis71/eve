@@ -1,6 +1,6 @@
 package com.sjd.eve.impl.command;
 
-import com.sjd.eve.cqrs.core.AbstractCommand;
+import com.sjd.eve.cqrs.core.Command;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class CreateCalculatorCommand extends AbstractCommand {
+public class CreateCalculatorCommand extends Command {
 
     private long initialValue;
 

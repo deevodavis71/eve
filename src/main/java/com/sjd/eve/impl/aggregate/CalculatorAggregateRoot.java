@@ -1,10 +1,9 @@
 package com.sjd.eve.impl.aggregate;
 
 import java.util.List;
-import java.util.UUID;
 
-import com.sjd.eve.cqrs.core.AbstractAggregate;
-import com.sjd.eve.cqrs.core.AbstractEvent;
+import com.sjd.eve.cqrs.core.AggregateRoot;
+import com.sjd.eve.cqrs.core.Event;
 import com.sjd.eve.cqrs.utils.EventUtils;
 import com.sjd.eve.impl.command.AddNumberCommand;
 import com.sjd.eve.impl.command.CreateCalculatorCommand;
@@ -29,11 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class CalculatorAggregate extends AbstractAggregate {
+public class CalculatorAggregateRoot extends AggregateRoot {
 
     private long total;
 
-    public List<AbstractEvent> process(CreateCalculatorCommand command) {
+    public List<Event> process(CreateCalculatorCommand command) {
 
         log.info("COMMAND: CreateCalculatorCommand, {}", command.getInitialValue());
 
@@ -44,7 +43,7 @@ public class CalculatorAggregate extends AbstractAggregate {
         return EventUtils.events(new CalculatorCreatedEvent(command.getInitialValue()));
     }
 
-    public List<AbstractEvent> process(AddNumberCommand command) {
+    public List<Event> process(AddNumberCommand command) {
 
         log.info("COMMAND: AddNumberCommand, {}", command.getData());
 
@@ -55,7 +54,7 @@ public class CalculatorAggregate extends AbstractAggregate {
         return EventUtils.events(new NumberAddedEvent(command.getData()));
     }
 
-    public List<AbstractEvent> process(SubtractNumberCommand command) {
+    public List<Event> process(SubtractNumberCommand command) {
 
         log.info("COMMAND: SubtractNumberCommand, {}", command.getData());
 

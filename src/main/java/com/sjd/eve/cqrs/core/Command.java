@@ -6,5 +6,5 @@ package com.sjd.eve.cqrs.core;
  * Time: 16:46
  * Description:
  */
-abstract public class AbstractCommand {
+abstract public class Command {
 }
