@@ -32,16 +32,16 @@ public class CalculatorWebController {
 
         this.commandBus = commandBus;
 
-        this.commandBus.registerCommand(CreateCalculatorCommand.class, CalculatorAggregateRoot.class);
-        this.commandBus.registerCommand(AddNumberCommand.class, CalculatorAggregateRoot.class);
-        this.commandBus.registerCommand(SubtractNumberCommand.class, CalculatorAggregateRoot.class);
+        commandBus.registerCommand(CreateCalculatorCommand.class, CalculatorAggregateRoot.class);
+        commandBus.registerCommand(AddNumberCommand.class, CalculatorAggregateRoot.class);
+        commandBus.registerCommand(SubtractNumberCommand.class, CalculatorAggregateRoot.class);
 
     }
 
     @PostMapping("/create/{data}")
     public String createCalculator(@PathVariable("data") Long data) throws Exception {
 
-        String id = this.commandBus.process(new CreateCalculatorCommand(data), null);
+        String id = this.commandBus.process(new CreateCalculatorCommand(data));
         return id;
 
     }
@@ -49,14 +49,14 @@ public class CalculatorWebController {
     @PutMapping("/add/{id}/{data}")
     public void addNumber(@PathVariable("id") String id, @PathVariable("data") Long data) throws Exception {
 
-        this.commandBus.process(new AddNumberCommand(data), id);
+        commandBus.process(new AddNumberCommand(data), id);
 
     }
 
     @PutMapping("/subtract/{id}/{data}")
     public void subtractNumber(@PathVariable("id") String id, @PathVariable("data") Long data) throws Exception {
 
-        this.commandBus.process(new SubtractNumberCommand(data), id);
+        commandBus.process(new SubtractNumberCommand(data), id);
 
     }
 }

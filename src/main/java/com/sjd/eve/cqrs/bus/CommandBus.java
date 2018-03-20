@@ -45,6 +45,12 @@ public class CommandBus {
 
     }
 
+    public String process(Command command) throws Exception {
+
+        return process(command, null);
+
+    }
+
     public String process(Command command, String aggregateId) throws Exception {
 
         // Start TX
@@ -74,8 +80,6 @@ public class CommandBus {
                 throw new Exception("Aggregate Id not found:" + aggregateId);
 
         }
-
-
 
         // Set the ID
         agg.setAggregateId(aggregateId);
